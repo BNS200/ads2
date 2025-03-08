@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/workspace/ads2/Lab1/build",
+  "command": "/usr/lib/llvm-19/bin/clang++ -I/workspace/ads2/Lab1/include -stdlib=libc++ -std=c++23 -fcolor-diagnostics --coverage -O0 -g -fsanitize=address -Wall -Wextra -Wshadow -Wbuiltin-macro-redefined -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -pedantic -o CMakeFiles/multiphasesorting.dir/source/multiphasesorting.cpp.o -c /workspace/ads2/Lab1/source/multiphasesorting.cpp",
+  "file": "/workspace/ads2/Lab1/source/multiphasesorting.cpp",
+  "output": "CMakeFiles/multiphasesorting.dir/source/multiphasesorting.cpp.o"
+}
+]

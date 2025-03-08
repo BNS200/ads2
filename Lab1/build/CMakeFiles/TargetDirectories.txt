@@ -1,0 +1,3 @@
+/workspace/ads2/Lab1/build/CMakeFiles/multiphasesorting.dir
+/workspace/ads2/Lab1/build/CMakeFiles/edit_cache.dir
+/workspace/ads2/Lab1/build/CMakeFiles/rebuild_cache.dir
