@@ -13,6 +13,9 @@ using std::ifstream;
 using std::ofstream;
 using std::vector;
 using std::string;
+using std::ios;
+
+
 
 const int endElement = -1;
 int L = 1;
@@ -80,9 +83,9 @@ void initialization_ip_ms(std::vector<int>& ip, std::vector<int>& ms, int countF
 void recalculate_ip_ms(std::vector<int>& ip, std::vector<int>& ms, int& L, int countFile) {
     L++; 
     int ip0 = ip[0];
-    for (int k = 0; k < countFile - 1; ++k) {
-        ms[k] = ip[k + 1] - ip[k] + ip0;
-        ip[k] = ip[k + 1] + ip0;
+    for (int i = 0; i < countFile - 1; ++i) {
+        ms[i] = ip[i + 1] - ip[i] + ip0;
+        ip[i] = ip[i + 1] + ip0;
     }
     ms[countFile - 1] = 0; 
     ip[countFile - 1] = 0; 
@@ -112,7 +115,7 @@ void fileSplitting(const std::string &mainFile, int countFile, std::vector<int>&
 
     while (inputFile >> current) {
         if (current < prev) {
-            outputFile[i] << endElement << " ";
+            outputFile[i] << "\n";
             ms[i]--;
             if (i + 1 < ms.size() && ms[i] < ms[i + 1]) {
                 i++;
@@ -122,86 +125,140 @@ void fileSplitting(const std::string &mainFile, int countFile, std::vector<int>&
             } else {
                 i = 0;
             }
-        }       
-        outputFile[i] << current << " ";
+        }
+        
+        if (prev != INT_MIN && current >= prev) { 
+            outputFile[i] << " ";
+        }
+           
+        outputFile[i] << current;
         prev = current;
     }
 
-    outputFile[i] << endElement << " ";
-
+    outputFile[i] << "\n";
+    ms[i]--;
+    
     for (int i = 0; i < countFile; ++i) {
         outputFile[i].close();
     }
 
-    for (int i = 0; i < fileNames.size(); ++i) {
-        cout << "file:" << fileNames[i] << endl;
-    }
 }
 
-/*void mergeFiles(vector<string>& fileNames, vector<int>& ms, vector<int>& ip, int& L, int countFile) {
-    while (L > 0) {
-        vector<ifstream> inputFiles(countFile - 1);
-        for (int i = 0; i < countFile - 1; ++i) {
-            inputFiles[i].open(fileNames[i]);
-            if (!inputFiles[i].is_open()) {
-                cerr << "error" << fileNames[i] << endl;
-                return;
+
+bool mergeFiles(int countFile, std::vector<std::string>& fileNames, std::vector<int>& ms, std::vector<int>& ip, int& L) {
+    std::vector<std::fstream*> mainFiles(countFile);
+
+    for(int i = 0; i < countFile - 1; i++){
+        mainFiles[i] = new std::fstream(fileNames[i], std::fstream::in);
+    }
+
+    mainFiles[countFile-1] = new std::fstream(fileNames[countFile - 1], std::fstream::out);
+
+    for(int i = 0; i < countFile; i++){
+        if(!mainFiles[i]->is_open()){
+            return false;
+        }
+    }
+
+    while(L > 0){
+        int minMs = ip[0];
+        for(int i = 0; i < countFile-1; i++){
+            if(ms[i] <= minMs){
+                minMs = ms[i];
             }
         }
-        ofstream outputFile(fileNames[countFile - 1]);
-        if (!outputFile.is_open()) {
-            cerr << "error"<< endl;
-            return;
+
+        ms[countFile-1] += minMs;
+        ip[countFile-1] += minMs;
+
+        for(int i = 0; i < countFile-1; i++){
+            ms[i] -= minMs;
+            ip[i] -= minMs;
         }
 
-        while (true) {
-            bool allMsZero = true;
-            for (int i = 0; i < countFile - 1; ++i) {
-                if (ms[i] > 0) {
-                    ms[i]--;
-                    ms[countFile - 1]++;
-                    allMsZero = false;
+        while(ip[countFile - 2] > 0){
+            std::vector<bool> boolSequences(countFile - 1, false);
+            std::vector<int> elemsOfSequences(countFile - 1);
+            int areSequences = false;
+
+            for(int i = 0; i < countFile - 1; i++){
+                if(ms[i] == 0){
+                    (*mainFiles[i]) >> elemsOfSequences[i];
+                    boolSequences[i] = true;
+                    areSequences = true;
+                } else {
+                    ms[i]--; 
+                    ip[i]--;
                 }
             }
 
-            for (int i = 0; i < countFile - 1; ++i) {
-                if (ms[i] == 0) {
-                    int value;
-                    while (inputFiles[i] >> value && value != -1) {
-                        outputFile << value << " ";
+            while(areSequences){
+                int minElemInSequence = INT_MAX; 
+                int posOfMin = -1;
+                for(int i = 0; i < countFile - 1; i++){
+                    if(boolSequences[i]){
+                        if(minElemInSequence >= elemsOfSequences[i]){
+                            minElemInSequence = elemsOfSequences[i];
+                            posOfMin = i;
+                        }
                     }
-                    outputFile << endElement << " ";
-                    ms[i]--;
                 }
-            }
+                if(posOfMin == -1){
+                    std::cerr << "error";
+                    return false;
+                }
+                (*mainFiles[countFile-1]) << elemsOfSequences[posOfMin];
+                if(mainFiles[posOfMin]->peek() != '\n'){
+                        (*mainFiles[posOfMin]) >> elemsOfSequences[posOfMin];
+                }else{
+                    boolSequences[posOfMin] = false;
+                    ip[posOfMin]--;
+                }
 
-            if (allMsZero) {
-                break;
-            }
-        }
+                areSequences = false;
+                for(int i = 0; i < countFile-1; i++){
+                    if(boolSequences[i]){
+                        areSequences = true;   
+                    }
+                }
 
-        for (int i = 0; i < countFile - 1; ++i) {
-            inputFiles[i].close();
+                if(areSequences){
+                    (*mainFiles[countFile-1]) << ' ';
+                }
+            } 
+            (*mainFiles[countFile-1]) << '\n';
+            ip[countFile - 1]++;           
         }
-        outputFile.close();
 
         L--;
-        string lastFileName = fileNames[countFile - 1];
-        for (int i = countFile - 1; i > 0; --i) {
-            fileNames[i] = fileNames[i - 1];
-        }
-        fileNames[0] = lastFileName;
 
-        int lastIp = ip[countFile - 1];
-        int lastMs = ms[countFile - 1];
-        for (int i = countFile - 1; i > 0; --i) {
-            ip[i] = ip[i - 1];
-            ms[i] = ms[i - 1];
+        mainFiles[countFile - 2]->close();
+        mainFiles[countFile - 1]->close();
+        mainFiles[countFile - 1]->open(fileNames[countFile - 1], std::fstream::in);
+        mainFiles[countFile - 2]->open(fileNames[countFile - 2], std::fstream::out);
+        if(!mainFiles[countFile-1]->is_open() || !mainFiles[countFile - 2]->is_open()){
+            return false;
         }
-        ip[0] = lastIp;
-        ms[0] = lastMs;
+
+        for(int i = countFile - 1; i > 0; i--){
+            std::swap(mainFiles[i], mainFiles[i-1]);
+            std::swap(fileNames[i], fileNames[i-1]);
+            std::swap(ms[i], ms[i-1]);
+            std::swap(ip[i], ip[i-1]);
+        }
     }
-}*/
+
+    for(int i = 0; i < countFile; i++){
+        mainFiles[i]->close();
+    }
+
+    for (int i = 0; i < countFile; ++i){
+        delete mainFiles[i];
+    }
+    
+    return true;
+}
+
 
 int main() {
     int countFile;
@@ -209,7 +266,7 @@ int main() {
     cin >> countFile;
 
     std::string mainFile = "mainFile.txt";
-    createFileWithRandomNumbers(mainFile, 10, 50);
+    //createFileWithRandomNumbers(mainFile, 10, 50);
     
     std::vector<std::string> fileNames;
 
@@ -218,7 +275,8 @@ int main() {
     initialization_ip_ms(ip, ms, countFile);
 
     fileSplitting(mainFile, countFile, ms, ip, fileNames, L);
-    //mergeFiles(fileNames, ms, ip, L, countFile);
-
+    mergeFiles(countFile, fileNames, ms, ip, L);
+    
+    
     return 0;
 }
