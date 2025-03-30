@@ -25,7 +25,7 @@ bool createFileWithRandomNumbers(const std::string &fileName, const int numbersC
     std::ofstream outFile(fileName);
     if (!outFile.is_open())
         return false;
-
+        
     std::random_device rd;
     std::mt19937 generator(rd());
     std::uniform_int_distribution<int> distribution(0, maxNumberValue);
@@ -164,7 +164,7 @@ bool mergeFiles(int countFile, std::vector<std::string>& fileNames, std::vector<
                 minMs = ms[i];
             }
         }
-
+        
         ms[countFile - 1] += minMs;
         ip[countFile - 1] += minMs;
 
@@ -172,7 +172,7 @@ bool mergeFiles(int countFile, std::vector<std::string>& fileNames, std::vector<
             ms[i] -= minMs;
             ip[i] -= minMs;
         }
-
+        
         while (ip[countFile - 2] > 0) {
             std::vector<bool> boolSequences(countFile - 1, false);
             std::vector<int> elemsOfSequences(countFile - 1);
@@ -276,9 +276,9 @@ void sortFile(const std::string &fileName, int countFile, const std::string &fil
     std::vector<std::string> fileNames;
     std::vector<int> ip (countFile); 
     std::vector<int> ms (countFile);
-
+    
     initialization_ip_ms(countFile, ip, ms);
-    int countSequences;
+    int countSequences = 0;
     int L = 1;
 
     fileSplitting(fileName, fileNames, countFile, ip, ms, L, countSequences);
@@ -287,9 +287,9 @@ void sortFile(const std::string &fileName, int countFile, const std::string &fil
 
 int createAndSortFile(const std::string &fileName, const int numbersCount, const int maxNumberValue, int countFile, const std::string &fileNameResult)
 {
-    //if (!createFileWithRandomNumbers(fileName, numbersCount, maxNumberValue)) {
-      //  return -1;
-    //}
+    if (!createFileWithRandomNumbers(fileName, numbersCount, maxNumberValue)) {
+        return -1;
+     }
 
     sortFile(fileName, countFile, fileNameResult);
     if (!isFileContainsSortedArray(fileNameResult)) {
@@ -317,15 +317,17 @@ int main()
                 std::cout << "Test passed." << std::endl;
             break;
 
-            //case -1:
-                //std::cout << "Test failed: can't create file." << std::endl;
-            //break;
+            case -1:
+                std::cout << "Test failed: can't create file." << std::endl;
+            break;
 
             case -2:
                 std::cout << "Test failed: file isn't sorted." << std::endl;
             break;
         }
     }
-
+        
     return 0;
 }
+
+
