@@ -41,33 +41,45 @@ class BinaryTree {
     
 
     bool isEmpty() const;
-    BinaryTree::Node* copyTree(const Node* node) const;
     BinaryTree::Node* getRoot() const;
-    int getHeight(BinaryTree::Node* node) const;
-    int countNode(const BinaryTree::Node* node) const;
-    int maxNode(const BinaryTree::Node* node) const;
-    int minNode(const BinaryTree::Node* node) const;
-    BinaryTree::Node* addNode(BinaryTree::Node* node, int key);
-    BinaryTree::Node* deleteNode(BinaryTree::Node* node, int key);
+    int getHeightTree() const;
+    int getHeightNode(int key) const;
+    int getCountNode() const;
     bool deleteNodeByKey(int key);
-    void printHorizontal(Node *root, int marginLeft, int levelSpacing) const;
-    BinaryTree::Node* findNode(BinaryTree::Node* node, int key) const;
+    BinaryTree::Node* addNewNode(int key);
     BinaryTree::Node* find(int key) const;
-    bool isBalanced(BinaryTree::Node* node) const;
     bool isBalancedTree() const;
     void clearTree();
     void clearSubTree(BinaryTree::Node* node);
-    BinaryTree::Node* findMostRight(BinaryTree::Node* node) const;
     void printByLevel() const;
-    void collectKeys(BinaryTree::Node* node, std::vector<int>& keys) const;    
     std::vector<int> getSortedKeys() const;
+    void printTreeHorizontal(int marginLeft, int levelSpacing) const;
 
 
+    int getMinNode() const;
+    int getMaxNode() const;
+    
     BinaryTree& operator=(const BinaryTree& other);
     BinaryTree& operator=(BinaryTree&& other);
-
-
+    
+    
     private:
     Node *root = nullptr;    
+    
+    int maxNode(const BinaryTree::Node* node) const;
+    int minNode(const BinaryTree::Node* node) const;
+    BinaryTree::Node* findNode(BinaryTree::Node* node, int key) const;
+    BinaryTree::Node* copyTree(const Node* node) const;
+    bool isBalanced(BinaryTree::Node* node) const;
+    BinaryTree::Node* deleteNode(BinaryTree::Node* node, int key);
+    int heightNode(Node* root, int key, int level) const;
+    int countNode(const BinaryTree::Node* node) const;
+    int heightTree(BinaryTree::Node* node) const;
+    void collectKeys(BinaryTree::Node* node, std::vector<int>& keys) const;    
+    BinaryTree::Node* findMostRight(BinaryTree::Node* node) const;
+    BinaryTree::Node* addNode(BinaryTree::Node* node, int key);
+    void printHorizontal(Node *root, int marginLeft, int levelSpacing) const;
+    
+    
 
 };
