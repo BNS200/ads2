@@ -25,7 +25,7 @@ class BinaryTree {
         void setLeft(Node *valueLeft);
         void setRight(Node *valueRight);
         
-    
+    private:
         int key = 0;
         Node *left = nullptr;
         Node *right = nullptr;
@@ -54,7 +54,7 @@ class BinaryTree {
     void printByLevel() const;
     std::vector<int> getSortedKeys() const;
     void printTreeHorizontal(int marginLeft, int levelSpacing) const;
-
+    void setRoot(BinaryTree::Node* node);
 
     int getMinNode() const;
     int getMaxNode() const;
@@ -64,8 +64,8 @@ class BinaryTree {
     
     
     private:
-    Node *root = nullptr;    
     
+    Node *root = nullptr;    
     int maxNode(const BinaryTree::Node* node) const;
     int minNode(const BinaryTree::Node* node) const;
     BinaryTree::Node* findNode(BinaryTree::Node* node, int key) const;

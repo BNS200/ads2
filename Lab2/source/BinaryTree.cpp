@@ -30,6 +30,11 @@ void BinaryTree::Node::setRight(Node *valueRight) {
     right = valueRight;
 } 
 
+void BinaryTree::setRoot(BinaryTree::Node* node){
+    root = node;
+}
+
+
 BinaryTree::Node* BinaryTree::getRoot() const{
     return root;
 }
@@ -66,32 +71,33 @@ int BinaryTree::getCountNode() const{
     return countNode(root);
 }
 
-void BinaryTree::clearTree(){
-    clearSubTree(root);
-    root = nullptr;
-}
-
-void BinaryTree::clearSubTree(BinaryTree::Node* node){
+void BinaryTree::clearSubTree(BinaryTree::Node* node) {
     if (node == nullptr)
         return;
-    clearSubTree(node -> left);
-    clearSubTree(node -> right);
+    clearSubTree(node->getLeft());
+    clearSubTree(node->getRight());
     delete node;
 }
 
+void BinaryTree::clearTree() {
+    if (root != nullptr) {
+        clearSubTree(root);
+        root = nullptr;
+    }
+}
 
 int BinaryTree::heightNode(BinaryTree::Node* node, int key, int level) const{
 	if (node == nullptr) 
 		return -1;
 
-	if (node->key == key)
+	if (node->getKey() == key)
 		return level;
 
-	int left = heightNode(node->left, key, level + 1);
+	int left = heightNode(node->getLeft(), key, level + 1);
 	if (left != -1)
 		return left;
 
-	int right = heightNode(node->right, key, level + 1);
+	int right = heightNode(node->getRight(), key, level + 1);
 	if (right != -1)
 		return right;
 }
@@ -101,8 +107,8 @@ int BinaryTree::heightTree(BinaryTree::Node* node) const {
     if (node == nullptr)
         return 0;
         
-    int leftHeight = heightTree(node -> left);
-    int rightHeight = heightTree(node -> right);
+    int leftHeight = heightTree(node -> getLeft());
+    int rightHeight = heightTree(node -> getRight());
 
     if (leftHeight > rightHeight){
         return leftHeight;
@@ -124,52 +130,54 @@ BinaryTree::Node* BinaryTree::copyTree(const BinaryTree::Node* node) const{
 bool BinaryTree::isEmpty() const{
     if (root == nullptr)
         return true;
+
+    return false;
 }
 
 int BinaryTree::countNode(const BinaryTree::Node* node) const{
     if (node == nullptr)
         return 0;
 
-    return (1 + countNode(node->left) + countNode(node->right));
+    return (1 + countNode(node->getLeft()) + countNode(node->getRight()));
 }
 
 
 int BinaryTree::minNode(const BinaryTree::Node* node) const{
     if (node == nullptr){
-        return 0;
+        return INT16_MAX;
     }
         
-    int minLeft = minNode(node->left);
-    int minRight = minNode(node->right);
+    int minLeft = minNode(node->getLeft());
+    int minRight = minNode(node->getRight());
 
-    return std::min(node->key, std::min(minLeft, minRight));
+    return std::min(node->getKey(), std::min(minLeft, minRight));
 }
 
 
 int BinaryTree::maxNode(const BinaryTree::Node* node) const{
     if (node == nullptr)
-        return 0;
+        return INT16_MIN;
 
-    int maxLeft  = maxNode(node->left);
-    int maxRight  = maxNode(node->right);
+    int maxLeft  = maxNode(node->getLeft());
+    int maxRight  = maxNode(node->getRight());
 
-    return std::max(node->key, std::max(maxLeft, maxRight));
+    return std::max(node->getKey(), std::max(maxLeft, maxRight));
 }
 
 
 BinaryTree::Node* BinaryTree::addNode(BinaryTree::Node* node, int key){
     if (node == nullptr){
         return nullptr;
-    } else if (node->left == nullptr){
+    } else if (node->getLeft() == nullptr){
         node->setLeft(new BinaryTree::Node(key));
-        return node->left;
-    } else if (node->right == nullptr){
+        return node->getLeft();
+    } else if (node->getRight() == nullptr){
         node->setRight(new BinaryTree::Node(key));
-        return node->right;
+        return node->getRight();
     } else if (rand() % 2){
-        return addNode(node->left, key);
+        return addNode(node->getLeft(), key);
     } else {
-        return addNode(node->right, key);
+        return addNode(node->getRight(), key);
     }
 }
 
@@ -181,8 +189,8 @@ BinaryTree::Node* BinaryTree::findMostRight(BinaryTree::Node* node) const {
     if (node == nullptr)
         return nullptr;
     
-    while (node && node->right){
-        node = node->right; 
+    while (node && node->getRight()){
+        node = node->getRight(); 
     }
     return node;
 }
@@ -191,37 +199,42 @@ BinaryTree::Node* BinaryTree::deleteNode(BinaryTree::Node* node, int key){
     if (node == nullptr)
         return nullptr;
 
-    if (node->key == key){
-        if ((node->left == nullptr) && (node->right == nullptr)){
+    if (node->getKey() == key){
+        if ((node->getLeft() == nullptr) && (node->getRight() == nullptr)){
             delete node; 
             node = nullptr;
-            return node;
+            return nullptr;
         }
-        else if (node->left == nullptr){
+        else if (node->getLeft() == nullptr){
+            BinaryTree::Node* temp = node->getRight();
             delete node;
-            return node = node->right;
+            node = nullptr;
+            return temp;
         } 
-        else if (node->right == nullptr){
+        else if (node->getRight() == nullptr){
+            BinaryTree::Node* temp = node->getLeft();
             delete node;
-            return node = node->left;
+            node = nullptr;
+            return temp;
         }
         else {
             BinaryTree::Node* temp = findMostRight(node);
             delete node; 
-            return node = temp;
+            node = nullptr;
+            return temp; 
         }   
         
     }
     else { 
-        node->left = deleteNode(node->left, key);
-        node->right =  deleteNode(node->right, key);
+        node->setLeft(deleteNode(node->getLeft(), key));
+        node->setRight(deleteNode(node->getRight(), key));
     }
     return node;
 }
 
 bool BinaryTree::deleteNodeByKey(int key){
    if (root == nullptr)
-        return false;
+        return false; 
 
     root = deleteNode(root,key);
 
@@ -238,14 +251,14 @@ void BinaryTree::printByLevel() const{
         for (size_t i = 0; i < levelSize; i++){
             BinaryTree::Node* current  = nodes.front();
             nodes.pop_back();
-            std::cout << current -> key << " ";
+            std::cout << current->getKey() << " ";
 
-            if (current->left){
-                nodes.push_back(current->left);
+            if (current->getLeft()){
+                nodes.push_back(current->getLeft());
             }
             
-            if (current->right){
-                nodes.push_back(current->right);
+            if (current->getRight()){
+                nodes.push_back(current->getRight());
             }
         }
         std::cout << std::endl;
@@ -256,9 +269,9 @@ void BinaryTree::printHorizontal(BinaryTree::Node *node, int marginLeft, int lev
     if (node == nullptr)
         return;
 
-    printHorizontal(node->left, marginLeft + levelSpacing, levelSpacing);
-    std::cout << std::string(marginLeft, ' ') << node->key << std::endl;
-    printHorizontal(node->right, marginLeft + levelSpacing, levelSpacing);
+    printHorizontal(node->getLeft(), marginLeft + levelSpacing, levelSpacing);
+    std::cout << std::string(marginLeft, ' ') << node->getKey() << std::endl;
+    printHorizontal(node->getRight(), marginLeft + levelSpacing, levelSpacing);
 }
 
 void BinaryTree::printTreeHorizontal(int marginLeft, int levelSpacing) const {
@@ -268,12 +281,12 @@ void BinaryTree::printTreeHorizontal(int marginLeft, int levelSpacing) const {
 BinaryTree::Node* BinaryTree::findNode(BinaryTree::Node* node, int key) const{
     if (node == nullptr)
          return nullptr;
-    if (node->key == key)
+    if (node->getKey() == key)
         return node;
-    BinaryTree::Node* newNode  = findNode(node->left, key);
+    BinaryTree::Node* newNode  = findNode(node->getLeft(), key);
     if (node)
         return node;
-    return findNode(node->right, key);
+    return findNode(node->getRight(), key);
 }
 
 BinaryTree::Node* BinaryTree::find(int key) const{
@@ -301,10 +314,10 @@ bool BinaryTree::isBalanced(BinaryTree::Node* node) const{
     if (node == nullptr)
      return false;
     
-    int leftHeight = heightTree(node->left);
-    int rightHeight = heightTree(node->right);
+    int leftHeight = heightTree(node->getLeft());
+    int rightHeight = heightTree(node->getRight());
 
-    return std::abs(leftHeight - rightHeight) <= 1 && isBalanced(node->left) && isBalanced(node->right);
+    return std::abs(leftHeight - rightHeight) <= 1 && isBalanced(node->getLeft()) && isBalanced(node->getRight());
 }
 
 bool BinaryTree::isBalancedTree() const{
@@ -315,10 +328,10 @@ void BinaryTree::collectKeys(BinaryTree::Node* node, std::vector<int>& keys) con
     if (node == nullptr)
         return;
     
-    keys.push_back(node->key);
+    keys.push_back(node->getKey());
     
-    collectKeys(node->left, keys);
-    collectKeys(node->right, keys);
+    collectKeys(node->getLeft(), keys);
+    collectKeys(node->getRight(), keys);
 }
 
 std::vector<int> BinaryTree::getSortedKeys() const{
