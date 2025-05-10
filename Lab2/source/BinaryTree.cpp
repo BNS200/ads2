@@ -1,4 +1,4 @@
-#include "BinaryTree.h"
+#include "../include/BinaryTree.h"
 
 BinaryTree::Node::Node() : key(0), left(nullptr), right(nullptr){}
 
@@ -41,7 +41,9 @@ BinaryTree::Node* BinaryTree::getRoot() const{
 
 BinaryTree::BinaryTree() : root(nullptr) {}
 
-BinaryTree::BinaryTree(BinaryTree&& other) : root(other.root) {}
+BinaryTree::BinaryTree(BinaryTree&& other){
+    root = other.root;
+}
 
 BinaryTree::BinaryTree(const BinaryTree& other){
     root = copyTree(other.root);
@@ -100,6 +102,8 @@ int BinaryTree::heightNode(BinaryTree::Node* node, int key, int level) const{
 	int right = heightNode(node->getRight(), key, level + 1);
 	if (right != -1)
 		return right;
+
+    return -1;
 }
 
 
@@ -185,17 +189,19 @@ BinaryTree::Node* BinaryTree::addNewNode(int key){
     return addNode(root, key);
 }
 
-BinaryTree::Node* BinaryTree::findMostRight(BinaryTree::Node* node) const {
-    if (node == nullptr)
+BinaryTree::Node* BinaryTree::findMostLeft() const {
+    if (root== nullptr)
         return nullptr;
     
-    while (node && node->getRight()){
-        node = node->getRight(); 
+
+    BinaryTree::Node* node = root;
+    while (node && node->getLeft()){
+        node = node->getLeft(); 
     }
     return node;
 }
 
-BinaryTree::Node* BinaryTree::deleteNode(BinaryTree::Node* node, int key){
+BinaryTree::Node* BinaryTree::deleteNode(BinaryTree::Node*& node, int key){
     if (node == nullptr)
         return nullptr;
 
@@ -218,16 +224,20 @@ BinaryTree::Node* BinaryTree::deleteNode(BinaryTree::Node* node, int key){
             return temp;
         }
         else {
-            BinaryTree::Node* temp = findMostRight(node);
-            delete node; 
-            node = nullptr;
-            return temp; 
+            BinaryTree::Node* mostLeft = findMostLeft();
+            int mostLeftKey = mostLeft->getKey();
+            BinaryTree::Node* temp = node->getLeft();
+            node->setLeft(deleteNode(temp, mostLeftKey));
+            node->setKey(mostLeftKey);
         }   
         
     }
     else { 
-        node->setLeft(deleteNode(node->getLeft(), key));
-        node->setRight(deleteNode(node->getRight(), key));
+        BinaryTree::Node* temp1 = node->getLeft();
+        BinaryTree::Node* temp2 = node->getRight();
+
+        node->setLeft(deleteNode(temp1, key));
+        node->setRight(deleteNode(temp2, key));
     }
     return node;
 }

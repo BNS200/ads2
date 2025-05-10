@@ -21,7 +21,6 @@ class BinaryTree {
     
         Node *getLeft() const;
         Node *getRight() const;
-    
         void setLeft(Node *valueLeft);
         void setRight(Node *valueRight);
         
@@ -62,6 +61,7 @@ class BinaryTree {
     BinaryTree& operator=(const BinaryTree& other);
     BinaryTree& operator=(BinaryTree&& other);
     
+    BinaryTree::Node* findMostLeft() const;
     
     private:
     
@@ -71,12 +71,11 @@ class BinaryTree {
     BinaryTree::Node* findNode(BinaryTree::Node* node, int key) const;
     BinaryTree::Node* copyTree(const Node* node) const;
     bool isBalanced(BinaryTree::Node* node) const;
-    BinaryTree::Node* deleteNode(BinaryTree::Node* node, int key);
+    BinaryTree::Node* deleteNode(BinaryTree::Node*& node, int key);
     int heightNode(Node* root, int key, int level) const;
     int countNode(const BinaryTree::Node* node) const;
     int heightTree(BinaryTree::Node* node) const;
     void collectKeys(BinaryTree::Node* node, std::vector<int>& keys) const;    
-    BinaryTree::Node* findMostRight(BinaryTree::Node* node) const;
     BinaryTree::Node* addNode(BinaryTree::Node* node, int key);
     void printHorizontal(Node *root, int marginLeft, int levelSpacing) const;
     
