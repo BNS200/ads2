@@ -10,6 +10,16 @@ int BinaryTree::Node::getKey() const {
     return key;
 }
 
+
+BinaryTree::Node*& BinaryTree::Node::getRefLeft(){
+    return left;
+}
+
+BinaryTree::Node*& BinaryTree::Node::getRefRight(){
+    return right;
+}
+
+
 BinaryTree::Node* BinaryTree::Node::getLeft() const {
     return left;
 }
@@ -186,14 +196,16 @@ BinaryTree::Node* BinaryTree::addNode(BinaryTree::Node* node, int key){
 }
 
 BinaryTree::Node* BinaryTree::addNewNode(int key){
+    // if (find(key) != nullptr)
+    //     return nullptr;
     return addNode(root, key);
 }
 
 BinaryTree::Node* BinaryTree::findMostLeft() const {
     if (root== nullptr)
-        return nullptr;
+    return nullptr;
     
-
+    
     BinaryTree::Node* node = root;
     while (node && node->getLeft()){
         node = node->getLeft(); 
@@ -201,52 +213,68 @@ BinaryTree::Node* BinaryTree::findMostLeft() const {
     return node;
 }
 
-BinaryTree::Node* BinaryTree::deleteNode(BinaryTree::Node*& node, int key){
+BinaryTree::Node* BinaryTree::findMostRight() const {
+    if (root== nullptr)
+    return nullptr;
+    
+    
+    BinaryTree::Node* node = root;
+    while (node && node->getRight()){
+        node = node->getRight(); 
+    }
+    return node;
+}
+
+void BinaryTree::deleteNode(BinaryTree::Node*& node, int key){
+
     if (node == nullptr)
-        return nullptr;
+        return;
 
     if (node->getKey() == key){
         if ((node->getLeft() == nullptr) && (node->getRight() == nullptr)){
             delete node; 
             node = nullptr;
-            return nullptr;
         }
         else if (node->getLeft() == nullptr){
             BinaryTree::Node* temp = node->getRight();
             delete node;
-            node = nullptr;
-            return temp;
+            node = temp;
         } 
         else if (node->getRight() == nullptr){
             BinaryTree::Node* temp = node->getLeft();
             delete node;
-            node = nullptr;
-            return temp;
+            node = temp;
         }
         else {
-            BinaryTree::Node* mostLeft = findMostLeft();
-            int mostLeftKey = mostLeft->getKey();
-            BinaryTree::Node* temp = node->getLeft();
-            node->setLeft(deleteNode(temp, mostLeftKey));
-            node->setKey(mostLeftKey);
-        }   
-        
+            if (findNode(root->getLeft(), key)){ 
+                
+                BinaryTree::Node* mostLeft = findMostLeft();
+                int mostLeftKey = mostLeft->getKey();
+                deleteNode(node->getRefLeft(), mostLeftKey);
+                node->setKey(mostLeftKey);
+            } else if (findNode(root->getRight(), key)){
+                
+                BinaryTree::Node* mostRight = findMostRight();
+                int mostRightKey = mostRight->getKey();
+                deleteNode(node->getRefRight(), mostRightKey);
+                node->setKey(mostRightKey);
+            }   
+        }
     }
     else { 
-        BinaryTree::Node* temp1 = node->getLeft();
-        BinaryTree::Node* temp2 = node->getRight();
-
-        node->setLeft(deleteNode(temp1, key));
-        node->setRight(deleteNode(temp2, key));
+        if (findNode(node->getLeft(), key)) {
+            deleteNode(node->getRefLeft(), key);
+        } else if (findNode(node->getRight(), key)) {
+            deleteNode(node->getRefRight(), key);
+        }
     }
-    return node;
 }
 
 bool BinaryTree::deleteNodeByKey(int key){
    if (root == nullptr)
         return false; 
 
-    root = deleteNode(root,key);
+    deleteNode(root,key);
 
     return true;
 }
@@ -291,11 +319,13 @@ void BinaryTree::printTreeHorizontal(int marginLeft, int levelSpacing) const {
 BinaryTree::Node* BinaryTree::findNode(BinaryTree::Node* node, int key) const{
     if (node == nullptr)
          return nullptr;
+
     if (node->getKey() == key)
         return node;
-    BinaryTree::Node* newNode  = findNode(node->getLeft(), key);
-    if (node)
-        return node;
+    
+    BinaryTree::Node* temp = findNode(node->getLeft(), key);
+    if (temp != nullptr)
+        return temp;
     return findNode(node->getRight(), key);
 }
 

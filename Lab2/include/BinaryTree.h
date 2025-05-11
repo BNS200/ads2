@@ -8,7 +8,6 @@
 class BinaryTree {
     public:
     class Node {
-    
     public:
         Node();
         Node(int key);
@@ -21,14 +20,17 @@ class BinaryTree {
     
         Node *getLeft() const;
         Node *getRight() const;
+
+        Node*& getRefLeft();
+        Node*& getRefRight();
+
         void setLeft(Node *valueLeft);
         void setRight(Node *valueRight);
         
     private:
-        int key = 0;
         Node *left = nullptr;
         Node *right = nullptr;
-    
+        int key = 0;
     };
     
     public:
@@ -62,6 +64,7 @@ class BinaryTree {
     BinaryTree& operator=(BinaryTree&& other);
     
     BinaryTree::Node* findMostLeft() const;
+    BinaryTree::Node* findMostRight() const;
     
     private:
     
@@ -71,7 +74,7 @@ class BinaryTree {
     BinaryTree::Node* findNode(BinaryTree::Node* node, int key) const;
     BinaryTree::Node* copyTree(const Node* node) const;
     bool isBalanced(BinaryTree::Node* node) const;
-    BinaryTree::Node* deleteNode(BinaryTree::Node*& node, int key);
+    void deleteNode(BinaryTree::Node*& node, int key);
     int heightNode(Node* root, int key, int level) const;
     int countNode(const BinaryTree::Node* node) const;
     int heightTree(BinaryTree::Node* node) const;
