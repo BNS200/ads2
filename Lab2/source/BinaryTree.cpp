@@ -196,8 +196,6 @@ BinaryTree::Node* BinaryTree::addNode(BinaryTree::Node* node, int key){
 }
 
 BinaryTree::Node* BinaryTree::addNewNode(int key){
-    // if (find(key) != nullptr)
-    //     return nullptr;
     return addNode(root, key);
 }
 

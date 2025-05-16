@@ -81,7 +81,5 @@ class BinaryTree {
     void collectKeys(BinaryTree::Node* node, std::vector<int>& keys) const;    
     BinaryTree::Node* addNode(BinaryTree::Node* node, int key);
     void printHorizontal(Node *root, int marginLeft, int levelSpacing) const;
-    
-    
 
 };
