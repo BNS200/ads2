@@ -52,7 +52,9 @@ BinaryTree::Node* BinaryTree::getRoot() const{
 BinaryTree::BinaryTree() : root(nullptr) {}
 
 BinaryTree::BinaryTree(BinaryTree&& other){
-    root = other.root;
+
+	root = other.getRoot();
+	other.setRoot(nullptr);
 }
 
 BinaryTree::BinaryTree(const BinaryTree& other){
