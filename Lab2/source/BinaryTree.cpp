@@ -158,7 +158,7 @@ int BinaryTree::countNode(const BinaryTree::Node* node) const{
 
 int BinaryTree::minNode(const BinaryTree::Node* node) const{
     if (node == nullptr){
-        return INT16_MAX;
+        return INT32_MAX;
     }
         
     int minLeft = minNode(node->getLeft());
@@ -170,7 +170,7 @@ int BinaryTree::minNode(const BinaryTree::Node* node) const{
 
 int BinaryTree::maxNode(const BinaryTree::Node* node) const{
     if (node == nullptr)
-        return INT16_MIN;
+        return INT32_MIN;
 
     int maxLeft  = maxNode(node->getLeft());
     int maxRight  = maxNode(node->getRight());
