@@ -40,9 +40,9 @@ class BinaryTree {
     BinaryTree(const BinaryTree& other);
     BinaryTree(BinaryTree&& other);
     
+    BinaryTree::Node* getRoot() const;
 
     bool isEmpty() const;
-    BinaryTree::Node* getRoot() const;
     int getHeightTree() const;
     int getHeightNode(int key) const;
     int getCountNode() const;
@@ -53,12 +53,12 @@ class BinaryTree {
     void clearTree();
     void clearSubTree(BinaryTree::Node* node);
     void printByLevel() const;
-    std::vector<int> getSortedKeys() const;
+    std::vector<int> getSortedKeys() ;
     void printTreeHorizontal(int marginLeft, int levelSpacing) const;
     void setRoot(BinaryTree::Node* node);
 
-    int getMinNode() const;
-    int getMaxNode() const;
+    int getMinNode() const; 
+    int getMaxNode() const; 
     
     BinaryTree& operator=(const BinaryTree& other);
     BinaryTree& operator=(BinaryTree&& other);
@@ -66,20 +66,25 @@ class BinaryTree {
     BinaryTree::Node* findMostLeft() const;
     BinaryTree::Node* findMostRight() const;
     
+    BinaryTree::Node *&getRefRoot ();
+    
+    protected:
+    
+    virtual int maxNode(const BinaryTree::Node* node) const;
+    virtual int minNode(const BinaryTree::Node* node) const;
+    virtual void collectKeys(BinaryTree::Node* node, std::vector<int>& keys) const;    
+    virtual BinaryTree::Node* findNode(BinaryTree::Node* node, int key) const;
+    virtual void deleteNode(BinaryTree::Node*& node, int key);
+    virtual BinaryTree::Node* addNode(BinaryTree::Node* node, int key);
+    virtual int heightNode(Node* root, int key, int level) const;
+    
     private:
     
     Node *root = nullptr;    
-    int maxNode(const BinaryTree::Node* node) const;
-    int minNode(const BinaryTree::Node* node) const;
-    BinaryTree::Node* findNode(BinaryTree::Node* node, int key) const;
     BinaryTree::Node* copyTree(const Node* node) const;
     bool isBalanced(BinaryTree::Node* node) const;
-    void deleteNode(BinaryTree::Node*& node, int key);
-    int heightNode(Node* root, int key, int level) const;
     int countNode(const BinaryTree::Node* node) const;
     int heightTree(BinaryTree::Node* node) const;
-    void collectKeys(BinaryTree::Node* node, std::vector<int>& keys) const;    
-    BinaryTree::Node* addNode(BinaryTree::Node* node, int key);
     void printHorizontal(Node *root, int marginLeft, int levelSpacing) const;
-
+     
 };
