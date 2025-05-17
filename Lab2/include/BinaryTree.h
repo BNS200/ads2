@@ -44,21 +44,21 @@ class BinaryTree {
 
     bool isEmpty() const;
     int getHeightTree() const;
-    virtual int getHeightNode(int key) const;
+    int getHeightNode(int key) const;
     int getCountNode() const;
-    virtual bool deleteNodeByKey(int key);
-    virtual BinaryTree::Node* addNewNode(int key);
-    virtual BinaryTree::Node* find(int key) const;
+    bool deleteNodeByKey(int key);
+    BinaryTree::Node* addNewNode(int key);
+    BinaryTree::Node* find(int key) const;
     bool isBalancedTree() const;
     void clearTree();
     void clearSubTree(BinaryTree::Node* node);
     void printByLevel() const;
-    virtual std::vector<int> getSortedKeys() ;
+    std::vector<int> getSortedKeys() ;
     void printTreeHorizontal(int marginLeft, int levelSpacing) const;
     void setRoot(BinaryTree::Node* node);
 
-    virtual int getMinNode() const; 
-    virtual int getMaxNode() const; 
+    int getMinNode() const; 
+    int getMaxNode() const; 
     
     BinaryTree& operator=(const BinaryTree& other);
     BinaryTree& operator=(BinaryTree&& other);
