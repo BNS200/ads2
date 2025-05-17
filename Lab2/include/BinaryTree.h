@@ -68,20 +68,23 @@ class BinaryTree {
     
     BinaryTree::Node *&getRefRoot ();
     
+    protected:
+    
+    virtual int maxNode(const BinaryTree::Node* node) const;
+    virtual int minNode(const BinaryTree::Node* node) const;
+    virtual void collectKeys(BinaryTree::Node* node, std::vector<int>& keys);    
+    virtual BinaryTree::Node* findNode(BinaryTree::Node* node, int key) const;
+    virtual void deleteNode(BinaryTree::Node*& node, int key);
+    virtual BinaryTree::Node* addNode(BinaryTree::Node* node, int key);
+    virtual int heightNode(Node* root, int key, int level) const;
+    
     private:
     
     Node *root = nullptr;    
-    int maxNode(const BinaryTree::Node* node) const;
-    int minNode(const BinaryTree::Node* node) const;
-    BinaryTree::Node* findNode(BinaryTree::Node* node, int key) const;
     BinaryTree::Node* copyTree(const Node* node) const;
     bool isBalanced(BinaryTree::Node* node) const;
-    void deleteNode(BinaryTree::Node*& node, int key);
-    int heightNode(Node* root, int key, int level) const;
     int countNode(const BinaryTree::Node* node) const;
     int heightTree(BinaryTree::Node* node) const;
-    void collectKeys(BinaryTree::Node* node, std::vector<int>& keys) const;    
-    BinaryTree::Node* addNode(BinaryTree::Node* node, int key);
     void printHorizontal(Node *root, int marginLeft, int levelSpacing) const;
      
 };
