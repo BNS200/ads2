@@ -9,31 +9,18 @@ class BinaryTreeSearch : public BinaryTree {
         BinaryTreeSearch(const BinaryTreeSearch& other);
         BinaryTreeSearch(BinaryTreeSearch&& other);
 
-        int getMinNode() const override;
-        int getMaxNode() const override;
-
-        BinaryTree::Node* addNewNode(int key) override;
-
-        bool deleteNodeByKey(int key) override;
-
-        BinaryTree::Node* find(int key) const override;
-
-        int getHeightNode(int key) const override;
-
-        std::vector<int> getSortedKeys()  override;
-
         BinaryTreeSearch& operator=(const BinaryTreeSearch& other);
         BinaryTreeSearch& operator=(BinaryTreeSearch&& other) ;
 
-    private:
-        int minNode(BinaryTree::Node* node) const;
-        int maxNode(BinaryTree::Node* node) const;
+    protected:
+        int minNode(BinaryTree::Node* node) const override;
+        int maxNode(BinaryTree::Node* node) const override;
 
-        BinaryTree::Node* addNode(BinaryTree::Node* node, int key); 
-        void deleteNode(BinaryTree::Node*& node, int key);
-        BinaryTree::Node* findNode(BinaryTree::Node* node, int key) const;
+        BinaryTree::Node* addNode(BinaryTree::Node* node, int key) override; 
+        void deleteNode(BinaryTree::Node*& node, int key) override;
+        BinaryTree::Node* findNode(BinaryTree::Node* node, int key) const override;
         
-        int nodeHeight(BinaryTree::Node* node, int key, int level) const;
+        int nodeHeight(BinaryTree::Node* node, int key, int level) const override;
         
-        void collectKeys(BinaryTree::Node* node, std::vector<int>& keys);
+        void collectKeys(BinaryTree::Node* node, std::vector<int>& keys) override;
 };
