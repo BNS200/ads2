@@ -40,31 +40,33 @@ class BinaryTree {
     BinaryTree(const BinaryTree& other);
     BinaryTree(BinaryTree&& other);
     
+    BinaryTree::Node* getRoot() const;
 
     bool isEmpty() const;
-    BinaryTree::Node* getRoot() const;
     int getHeightTree() const;
-    int getHeightNode(int key) const;
+    virtual int getHeightNode(int key) const;
     int getCountNode() const;
-    bool deleteNodeByKey(int key);
-    BinaryTree::Node* addNewNode(int key);
-    BinaryTree::Node* find(int key) const;
+    virtual bool deleteNodeByKey(int key);
+    virtual BinaryTree::Node* addNewNode(int key);
+    virtual BinaryTree::Node* find(int key) const;
     bool isBalancedTree() const;
     void clearTree();
     void clearSubTree(BinaryTree::Node* node);
     void printByLevel() const;
-    std::vector<int> getSortedKeys() const;
+    virtual std::vector<int> getSortedKeys() ;
     void printTreeHorizontal(int marginLeft, int levelSpacing) const;
     void setRoot(BinaryTree::Node* node);
 
-    int getMinNode() const;
-    int getMaxNode() const;
+    virtual int getMinNode() const; 
+    virtual int getMaxNode() const; 
     
     BinaryTree& operator=(const BinaryTree& other);
     BinaryTree& operator=(BinaryTree&& other);
     
     BinaryTree::Node* findMostLeft() const;
     BinaryTree::Node* findMostRight() const;
+    
+    BinaryTree::Node *&getRefRoot ();
     
     private:
     
@@ -81,5 +83,5 @@ class BinaryTree {
     void collectKeys(BinaryTree::Node* node, std::vector<int>& keys) const;    
     BinaryTree::Node* addNode(BinaryTree::Node* node, int key);
     void printHorizontal(Node *root, int marginLeft, int levelSpacing) const;
-
+     
 };
