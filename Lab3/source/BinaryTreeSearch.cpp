@@ -1,46 +1,10 @@
 #include "BinaryTreeSearch.h"
 
-
 BinaryTreeSearch::BinaryTreeSearch() : BinaryTree(){};
 
 BinaryTreeSearch::BinaryTreeSearch(const BinaryTreeSearch& other) : BinaryTree(other){};
 
 BinaryTreeSearch::BinaryTreeSearch(BinaryTreeSearch&& other) : BinaryTree(std::move(other)){};
-
-// int BinaryTreeSearch::getMinNode() const {
-//     return minNode(getRoot());
-// }
-
-// int BinaryTreeSearch::getMaxNode() const  {
-//     return maxNode(getRoot());
-// }
-
-// std::vector<int> BinaryTreeSearch::getSortedKeys(){
-//     std::vector<int> keys;
-//     collectKeys(getRoot(), keys);
-//     return keys;
-// }
-
-// BinaryTree::Node* BinaryTreeSearch::addNewNode(int key)  {
-//     return addNode(getRoot(), key);
-// }
-
-// bool BinaryTreeSearch::deleteNodeByKey(int key){
-//     if (getRoot() == nullptr)
-//         return false;
-
-//     deleteNode(getRefRoot(), key);
-//     return true;
-       
-// }
-
-// int BinaryTreeSearch::getHeightNode(int key) const{ 
-//     return nodeHeight(getRoot(), key, 1);
-// }
-
-// BinaryTree::Node* BinaryTreeSearch::find(int key) const { 
-//     return findNode(getRoot(), key);
-// }
 
 void BinaryTreeSearch::deleteNode(BinaryTree::Node*& node, int key){
     if (node == nullptr)
@@ -138,7 +102,6 @@ BinaryTree::Node* BinaryTreeSearch::addNode(BinaryTree::Node* node, int key){
     }
     if (node == nullptr)
         return new BinaryTree::Node(key);
-    
 
     if (node->getKey() < key){
         node->setRight(addNode(node->getRight(), key));
@@ -151,10 +114,11 @@ BinaryTree::Node* BinaryTreeSearch::addNode(BinaryTree::Node* node, int key){
 }
 
 void BinaryTreeSearch::collectKeys(BinaryTree::Node* node, std::vector<int>& keys) const {
-    if (node == nullptr)
+    if (node == nullptr) {
         return;
-        collectKeys(node->getLeft(), keys);
-        keys.push_back(node->getKey());
-        collectKeys(node->getRight(), keys);
-        
     }
+
+    collectKeys(node->getLeft(), keys);
+    keys.push_back(node->getKey());
+    collectKeys(node->getRight(), keys);
+}
