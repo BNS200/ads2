@@ -1,4 +1,4 @@
-#include "BinaryTree.h"
+#include "/workspace/ads2/Lab2/include/BinaryTree.h"
 #include <iostream>
 
 class BinaryTreeSearch : public BinaryTree {
@@ -11,6 +11,7 @@ class BinaryTreeSearch : public BinaryTree {
 
         BinaryTreeSearch& operator=(const BinaryTreeSearch& other);
         BinaryTreeSearch& operator=(BinaryTreeSearch&& other) ;
+
 
     protected:
         int minNode(const BinaryTree::Node* node) const override;
