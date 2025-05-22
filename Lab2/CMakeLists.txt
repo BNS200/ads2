@@ -16,3 +16,5 @@ add_executable(BinaryTree
     source/BinaryTree.cpp
     source/BinaryTreeMain.cpp
 )
+
+add_library(Lab2Lib STATIC source/BinaryTree.cpp)
