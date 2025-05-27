@@ -1,4 +1,5 @@
 #include "BinaryTreeSearch.h"
+#include <climits>
 
 BinaryTreeSearch::BinaryTreeSearch() : BinaryTree(){};
 
@@ -121,4 +122,57 @@ void BinaryTreeSearch::collectKeys(BinaryTree::Node* node, std::vector<int>& key
     collectKeys(node->getLeft(), keys);
     keys.push_back(node->getKey());
     collectKeys(node->getRight(), keys);
+}
+
+BinaryTreeSearch BinaryTreeSearch::optimalTree(const std::vector<int>& keys, const std::vector<int>& p, const std::vector<int>& q) {
+    BinaryTreeSearch tree;
+    int n = keys.size();
+
+    if (n == 0 || p.size() != n || q.size() != n + 1) {
+        return tree;
+    }
+
+    std::vector<std::vector<int>> W(n+1, std::vector<int>(n+1, 0));
+    std::vector<std::vector<int>> C(n+1, std::vector<int>(n+1, 0));
+    std::vector<std::vector<int>> R(n+1, std::vector<int>(n+1, 0));
+
+    for (int i = 0; i <= n; ++i) {
+        W[i][i] = q[i];
+        C[i][i] = q[i];
+    }
+
+    for (int l = 1; l <= n; ++l) {       
+        for (int i = 0; i <= n - l; ++i) {
+            int j = i + l;                  
+
+            W[i][j] = W[i][j-1] + p[j-1] + q[j];
+
+            C[i][j] = INT_MAX;
+            for (int k = i+1; k <= j; ++k) {
+                int temp = C[i][k-1] + C[k][j];
+                if (temp < C[i][j]) {
+                    C[i][j] = temp;
+                    R[i][j] = k;
+                }
+            }
+            C[i][j] += W[i][j];
+        }
+    }
+
+
+    tree.setRoot(createOptimalTree(keys, R, 0, n));
+    return tree;
+}
+
+BinaryTree::Node* BinaryTreeSearch::createOptimalTree(const std::vector<int>& keys, const std::vector<std::vector<int>>& R, int i, int j) { 
+    if (i >= j) {
+        return nullptr;
+    }   
+
+    int k = R[i][j];
+    BinaryTree::Node* node = new BinaryTree::Node(keys[k-1]);
+    node->setRight(createOptimalTree(keys, R, k, j));
+    node->setLeft(createOptimalTree(keys, R, i, k-1));
+
+    return node;
 }
