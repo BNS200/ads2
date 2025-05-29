@@ -72,7 +72,7 @@ class BinaryTree {
     
     virtual int maxNode(const BinaryTree::Node* node) const;
     virtual int minNode(const BinaryTree::Node* node) const;
-    virtual void collectKeys(BinaryTree::Node* node, std::vector<int>& keys);    
+    virtual void collectKeys(BinaryTree::Node* node, std::vector<int>& keys) const;    
     virtual BinaryTree::Node* findNode(BinaryTree::Node* node, int key) const;
     virtual void deleteNode(BinaryTree::Node*& node, int key);
     virtual BinaryTree::Node* addNode(BinaryTree::Node* node, int key);

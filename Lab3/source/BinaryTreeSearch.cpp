@@ -1,46 +1,10 @@
 #include "BinaryTreeSearch.h"
-#include "BinaryTree.h"
 
 BinaryTreeSearch::BinaryTreeSearch() : BinaryTree(){};
 
 BinaryTreeSearch::BinaryTreeSearch(const BinaryTreeSearch& other) : BinaryTree(other){};
 
 BinaryTreeSearch::BinaryTreeSearch(BinaryTreeSearch&& other) : BinaryTree(std::move(other)){};
-
-int BinaryTreeSearch::getMinNode() const {
-    return minNode(getRoot());
-}
-
-int BinaryTreeSearch::getMaxNode() const  {
-    return maxNode(getRoot());
-}
-
-std::vector<int> BinaryTreeSearch::getSortedKeys(){
-    std::vector<int> keys;
-    collectKeys(getRoot(), keys);
-    return keys;
-}
-
-BinaryTree::Node* BinaryTreeSearch::addNewNode(int key)  {
-    return addNode(getRoot(), key);
-}
-
-bool BinaryTreeSearch::deleteNodeByKey(int key){
-    if (getRoot() == nullptr)
-        return false;
-
-    deleteNode(getRefRoot(), key);
-    return true;
-       
-}
-
-int BinaryTreeSearch::getHeightNode(int key) const{ 
-    return nodeHeight(getRoot(), key, 1);
-}
-
-BinaryTree::Node* BinaryTreeSearch::find(int key) const { 
-    return findNode(getRoot(), key);
-}
 
 void BinaryTreeSearch::deleteNode(BinaryTree::Node*& node, int key){
     if (node == nullptr)
@@ -88,7 +52,7 @@ BinaryTree::Node* BinaryTreeSearch::findNode(BinaryTree::Node* node, int key) co
     return nullptr;
 }
 
-int BinaryTreeSearch::nodeHeight(BinaryTree::Node* node, int key, int level) const{
+int BinaryTreeSearch::heightNode(BinaryTree::Node* node, int key, int level) const{
     if (node == nullptr){
         return -1;
     }
@@ -97,17 +61,17 @@ int BinaryTreeSearch::nodeHeight(BinaryTree::Node* node, int key, int level) con
         return level;
     
     if (node->getKey() < key){
-        return nodeHeight(node->getRight(), key, level + 1);
+        return heightNode(node->getRight(), key, level + 1);
     }
     
     if (node->getKey() > key){
-        return nodeHeight(node->getLeft(), key, level + 1);
+        return heightNode(node->getLeft(), key, level + 1);
     }
 
     return -1;
 }
 
-int BinaryTreeSearch::maxNode(BinaryTree::Node* node) const 
+int BinaryTreeSearch::maxNode(const BinaryTree::Node* node) const 
 { 
     if (node == nullptr)
         return INT32_MIN;
@@ -119,7 +83,7 @@ int BinaryTreeSearch::maxNode(BinaryTree::Node* node) const
     return node->getKey();
 }
 
-int BinaryTreeSearch::minNode(BinaryTree::Node * node) const
+int BinaryTreeSearch::minNode(const BinaryTree::Node * node) const
 {
     if (node == nullptr)
         return INT32_MAX;
@@ -132,12 +96,12 @@ int BinaryTreeSearch::minNode(BinaryTree::Node * node) const
 }
 
 BinaryTree::Node* BinaryTreeSearch::addNode(BinaryTree::Node* node, int key){
-    if (node == nullptr)
-        return new BinaryTree::Node(key);
-    
     if (getRoot() == nullptr){
         setRoot(new BinaryTree::Node(key));
+        return getRoot();
     }
+    if (node == nullptr)
+        return new BinaryTree::Node(key);
 
     if (node->getKey() < key){
         node->setRight(addNode(node->getRight(), key));
@@ -149,11 +113,12 @@ BinaryTree::Node* BinaryTreeSearch::addNode(BinaryTree::Node* node, int key){
     return node;
 }
 
-void BinaryTreeSearch::collectKeys(BinaryTree::Node* node, std::vector<int>& keys){
-    if (node == nullptr)
+void BinaryTreeSearch::collectKeys(BinaryTree::Node* node, std::vector<int>& keys) const {
+    if (node == nullptr) {
         return;
-        collectKeys(node->getLeft(), keys);
-        keys.push_back(node->getKey());
-        collectKeys(node->getRight(), keys);
-        
     }
+
+    collectKeys(node->getLeft(), keys);
+    keys.push_back(node->getKey());
+    collectKeys(node->getRight(), keys);
+}

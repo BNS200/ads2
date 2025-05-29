@@ -372,15 +372,13 @@ void BinaryTree::collectKeys(BinaryTree::Node* node, std::vector<int>& keys) con
     
     collectKeys(node->getLeft(), keys);
     collectKeys(node->getRight(), keys);
-}
-
-std::vector<int> BinaryTree::getSortedKeys() const{
-    std::vector<int> keys;
-
-    collectKeys(root, keys);
 
     std::sort(keys.begin(), keys.end());
-    
+}
+
+std::vector<int> BinaryTree::getSortedKeys(){
+    std::vector<int> keys;
+    collectKeys(root, keys);
     return keys;
 }
 

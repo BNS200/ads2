@@ -21,6 +21,5 @@ class BinaryTreeSearch : public BinaryTree {
         BinaryTree::Node* findNode(BinaryTree::Node* node, int key) const override;
         
         int heightNode(BinaryTree::Node* node, int key, int level) const override;
-        
-        void collectKeys(BinaryTree::Node* node, std::vector<int>& keys) override;
+        void collectKeys(BinaryTree::Node* node, std::vector<int>& keys) const override;
 };
