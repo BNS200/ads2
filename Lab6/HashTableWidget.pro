@@ -10,7 +10,6 @@ CONFIG += c++17
 
 SOURCES += \
     BaseHashTableWidget.cpp \
-    HashTable.cpp \
     SceneHashTableWidget.cpp \
     TableElementWidget.cpp \
     main.cpp

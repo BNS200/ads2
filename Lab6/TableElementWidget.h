@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QWidget>
-#include "HashTable.h"
+
 
 
 
@@ -31,14 +31,13 @@ public:
      * @brief Возвращает true если у элемента не задан ключ.
      */
     bool isEmpty() const;
-
+    void itemNotEditable();
+    void itemEditable();
+    void setColor(const QColor& color);
     /**
      * @brief Очищает значения полей ключа и значения.
      */
     void clear();
-
-private:
-    HashTable<QString>* hashTable;
 
 signals:
     /**

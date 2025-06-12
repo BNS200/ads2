@@ -1,4 +1,3 @@
-#include "HashTableWidget.h"
 #include "SceneHashTableWidget.h"
 
 #include <QApplication>

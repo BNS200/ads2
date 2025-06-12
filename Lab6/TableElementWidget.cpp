@@ -1,3 +1,5 @@
+#include <QPalette>
+#include <QColor>
 #include "TableElementWidget.h"
 #include "ui_TableElementWidget.h"
 
@@ -10,6 +12,24 @@ TableElementWidget::TableElementWidget(QWidget *parent) :
     ui->setupUi(this);
 
     connect(ui->lineEdit_value, &QLineEdit::textChanged, this, &TableElementWidget::onValueChanged);
+}
+
+void TableElementWidget::itemEditable(){
+    ui->lineEdit_value->setEnabled(1);
+}
+
+void TableElementWidget::itemNotEditable(){
+    ui->lineEdit_value->setEnabled(0);
+    ui->lineEdit_key->setEnabled(0);
+}
+
+void TableElementWidget::setColor(const QColor& color)
+{
+
+    QPalette palette = ui->lineEdit_key->palette();
+    palette.setColor(QPalette::Base, color);
+    ui->lineEdit_key->setPalette(palette);
+    //ui->lineEdit_value->setPalette(palette);
 }
 
 TableElementWidget::~TableElementWidget()

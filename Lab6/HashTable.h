@@ -19,13 +19,10 @@ public:
 
 class HashFunction1 : public InterfaceHashFunction {
 
-    //int c;
-    //int d;
-    //int listNumber;
 public:
     HashFunction1(){}
     size_t hashFunction(int key,size_t tableSize) override {
-        return static_cast<size_t> (key) % tableSize;
+        return (static_cast<size_t>(key + 5) % tableSize);
     }
 
 };
@@ -35,9 +32,9 @@ class HashFunction2 : public InterfaceHashFunction {
     const double a = (sqrt(5) - 1)/2;
 
 public:
-    HashFunction2(double aValue) : a(aValue){}
+    HashFunction2(){}
     size_t hashFunction(int key, size_t tableSize) override {
-        return static_cast<size_t>(key * a * tableSize) % tableSize;
+        return (static_cast<size_t>(key * a * tableSize) % tableSize);
     }
 
 };
@@ -45,23 +42,28 @@ public:
 class HashFunction3 : public InterfaceHashFunction {
 
 public:
+    HashFunction3(){}
     size_t hashFunction(int key, size_t tableSize) override {
-        return (key % tableSize + (1 + key % (tableSize - 2))) % tableSize;
+        return ((key % tableSize + (1 + key % (tableSize - 2))) % tableSize);
     }
 };
 
 template <typename T>
 class HashTable {
-
 public:
-
-    HashTable(size_t tableSize, InterfaceHashFunction* currentFunction, int listNumber);
+    HashTable();
+    HashTable(size_t tableSize, InterfaceHashFunction* currentFunction);
     HashTable(const HashTable<T>& other);
     ~HashTable();
 
     void setTableSize(size_t tableSize);
+    void setHashFunction(InterfaceHashFunction* newHashFunction);
+    void setValue(int key, T value);
     size_t getTableSize() const;
-    const std::vector<std::list<std::pair<int, T>>>& getHashTable() const;
+    const std::vector<std::list<std::pair<int, T>>> getHashTable() const;
+    InterfaceHashFunction* getCurrentFunction();
+
+
     HashTable<T>& operator=(const HashTable<T>& other);
     void swap(HashTable<T>& other);
     bool contains(int key);
@@ -69,46 +71,87 @@ public:
     void removeByKey(int key);
     int keyIndex(int key);
     void deleteByIndex(std::list<std::pair<int, T>>& list, int index);
-    void changeHashFunction(InterfaceHashFunction* newFunction);
+    void clear();
     const T& operator[](int key) const;
 
-    InterfaceHashFunction* currentFunction = nullptr;
 
 private:
-
+    InterfaceHashFunction* currentFunction = new HashFunction1();
     std::vector<std::list<std::pair<int, T>>> table;
-    size_t tableSize = 0;
-    //int listNumber = 1;
-
-
+    size_t tableSize = 3;
 };
 
 template <typename T>
+HashTable<T>::HashTable() : tableSize(3), currentFunction(new HashFunction1()){
+    table.resize(tableSize);
+}
 
+template <typename T>
 HashTable<T>::HashTable(size_t tableSize, InterfaceHashFunction* currentFunction)
     : tableSize(tableSize), currentFunction(currentFunction){
     table.resize(tableSize);
 }
 
 template <typename T>
-
-HashTable<T>::HashTable(const HashTable& other) : tableSize(other.tableSize), currentFunction(other.currentFunction){}
+HashTable<T>::HashTable(const HashTable& other) : tableSize(other.getTableSize()), currentFunction(other.getCurrentFunction()), table(other.getHashTable()){}
 
 template <typename T>
-
 HashTable<T>::~HashTable(){
     delete currentFunction;
+    currentFunction = nullptr;
+}
+
+template<typename T>
+InterfaceHashFunction* HashTable<T>::getCurrentFunction(){
+    return currentFunction;
 }
 
 template <typename T>
+size_t HashTable<T>::getTableSize() const {
+    return tableSize;
+}
 
+template <typename T>
+const std::vector<std::list<std::pair<int, T>>> HashTable<T>::getHashTable() const {
+    return table;
+}
+
+template<typename T>
+void HashTable<T>::setValue(int key, T value){
+    size_t hash = getCurrentFunction()->hashFunction(key, tableSize);
+
+    auto& list = table[hash];
+    for (auto it = list.begin(); it != list.end(); it++){
+        if (it->first == key){
+            it->second = value;
+            return;
+        }
+    }
+}
+
+template <typename T>
+void HashTable<T>::setHashFunction(InterfaceHashFunction* newFunction){
+
+    if (newFunction == nullptr)
+        return;
+
+    std::vector<std::list<std::pair<int, T>>> newTable(tableSize);
+    for (auto it1 = table.begin(); it1 != table.end(); it1++) {
+        for (auto it2 = it1->begin(); it2 != it1->end(); it2++) {
+            size_t hash = newFunction->hashFunction(it2->first, tableSize);
+            newTable[hash].push_back(*it2);
+        }
+    }
+    currentFunction = newFunction;
+    table = newTable;
+}
+
+template <typename T>
 void HashTable<T>::setTableSize(size_t newSize) {
-
     if (newSize == tableSize)
         return;
 
     std::vector<std::list<std::pair<int, T>>> newTable(newSize);
-
     for (auto it1 = table.begin(); it1 != table.end(); it1++) {
         for (auto it2 = it1->begin(); it2 != it1->end(); it2++) {
             size_t hash = currentFunction->hashFunction(it2->first, newSize);
@@ -120,34 +163,13 @@ void HashTable<T>::setTableSize(size_t newSize) {
     tableSize = newSize;
 }
 
-template <typename T>
-
-size_t HashTable<T>::getTableSize() const {
-    return tableSize;
+template<typename T>
+void HashTable<T>::clear() {
+    table.clear();
+    table.resize(tableSize);
 }
 
 template <typename T>
-
-const std::vector<std::list<std::pair<int, T>>>& HashTable<T>::getHashTable() const {
-    return table;
-}
-
-template <typename T>
-
-HashTable<T>& HashTable<T>::operator=(const HashTable<T>& other){
-    if (this == &other)
-        return *this;
-
-    tableSize = other.tableSize;
-    table = other.table;
-    delete currentFunction;
-    currentFunction = other.currentFunction;
-
-    return (*this);
-}
-
-template <typename T>
-
 void HashTable<T>::swap(HashTable<T>& other) {
     std::swap(table, other.table);
     std::swap(tableSize, other.tableSize);
@@ -155,7 +177,6 @@ void HashTable<T>::swap(HashTable<T>& other) {
 }
 
 template <typename T>
-
 bool HashTable<T>::contains(int key){
 
     if (currentFunction == nullptr) {
@@ -174,7 +195,6 @@ bool HashTable<T>::contains(int key){
 }
 
 template <typename T>
-
 void HashTable<T>::insert(int key, T value) {
     if (contains(key))
         return;
@@ -185,66 +205,51 @@ void HashTable<T>::insert(int key, T value) {
 }
 
 template <typename T>
-
 int HashTable<T>::keyIndex(int key){
 
     size_t hash = currentFunction->hashFunction(key, tableSize);
     int index = 0;
 
     for (auto it = table[hash].begin(); it != table[hash].end(); it++) {
-        index++;
         if (it->first == key) {
             return index;
         }
+        index++;
     }
     return -1;
 }
 
 
 template<typename T>
-
-void HashTable<T>::removeByKey(int key)
-{
-    int index = keyIndex(key);
-    if (index == -1)
+void HashTable<T>::removeByKey(int key) {
+    if (!contains(key))
         return;
 
     size_t hash = currentFunction->hashFunction(key, tableSize);
+    auto& list = table[hash];
 
-    deleteByIndex(table[hash], index);
-}
-
-template<typename T>
-
-void HashTable<T>::deleteByIndex(std::list<std::pair<int, T>>& list, int index){
-    if (index >= list.size() || index < 0)
-        return;
-
-    typename std::list<std::pair<int, T>>::iterator it = list.begin();
-    std::advance(it, index);
-    list.erase(it);
-}
-
-template <typename T>
-void HashTable<T>::changeHashFunction(InterfaceHashFunction* newFunction) {
-    if (newFunction == nullptr)
-        return;
-
-    std::vector<std::list<std::pair<int, T>>> newTable(tableSize);
-    for (auto it1 = table.begin(); it1 != table.end(); it1++) {
-        for (auto it2 = it1->begin(); it2 != it1->end(); it2++) {
-            size_t hash = newFunction->hashFunction(it2->first, tableSize);
-            newTable[hash].push_back(*it2);
+    for (auto it = list.begin(); it != list.end(); it++) {
+        if (it->first == key) {
+            it = list.erase(it);
+            return;
         }
     }
-
-    delete currentFunction;
-    currentFunction = newFunction;
-    table = newTable;
 }
 
 template <typename T>
+HashTable<T>& HashTable<T>::operator=(const HashTable<T>& other){
+    if (this == &other)
+        return *this;
 
+    tableSize = other.tableSize;
+    table = other.table;
+    delete currentFunction;
+    currentFunction = other.currentFunction;
+
+    return (*this);
+}
+
+template <typename T>
 const T& HashTable<T>::operator[](int key) const {
     size_t hash = currentFunction->hashFunction(key, tableSize);
 
@@ -258,7 +263,6 @@ const T& HashTable<T>::operator[](int key) const {
 }
 
 template <typename T>
-
 std::ostream& operator<<(std::ostream& os, HashTable<T>& table) {
     for (size_t i = 0; i < table.getTableSize(); i++) {
         os << "hash = " << i << ":\t";

@@ -3,9 +3,9 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 
-#include "TableElementWidget.h"
-#include "HashTable.h"
 #include "BaseHashTableWidget.h"
+#include "TableElementWidget.h"
+
 
 /**
  * @brief Класс виджета хеш-таблицы, основанной на методе внешних цепочек.
@@ -16,16 +16,16 @@
 class SceneHashTableWidget : public BaseHashTableWidget
 {
 
-private:
-    HashTable<QString>* hashTable;
-
-
 public:
     SceneHashTableWidget(QWidget *parent = nullptr);
 
 protected slots:
     void addKeyValue() override;
     void resizeTable() override;
+    void deleteByKey() override;
+    void find() override;
+    void changeHashFunction(int index) override;
+
 
 private:
     /**

@@ -9,73 +9,114 @@ SceneHashTableWidget::SceneHashTableWidget(QWidget *parent)
     : BaseHashTableWidget(parent)
     , m_scene(new QGraphicsScene(this))
     , m_view(new QGraphicsView(this))
-    , hashTable(new HashTable<QString>(ui->spinBox_size->value(), new HashFunction1(1), 1))
 {
     m_view->setScene(m_scene);
     ui->verticalLayout->insertWidget(0, m_view);
     SceneHashTableWidget::resizeTable();
 }
 
+void SceneHashTableWidget::changeHashFunction(int index){
+    switch (index) {
+    case 0:
+        hashTable.setHashFunction(new HashFunction1());
+        break;
+    case 1:
+        hashTable.setHashFunction(new HashFunction2());
+        break;
+    case 2:
+        hashTable.setHashFunction(new HashFunction3());
+        break;
+    default:
+        break;
+    }
+
+    SceneHashTableWidget::resizeTable();
+}
+
 void SceneHashTableWidget::addKeyValue()
 {
-    // TODO: проверка на повтор ключа
-    // TODO: заменить определение строки, столбца, коллизий
-    if (hashTable->contains(ui->spinBox_key->value())) {
+    if (hashTable.contains(ui->spinBox_key->value())) {
+        return;
+    }
+    size_t row = hashTable.getCurrentFunction()->hashFunction(ui->spinBox_key->value(), m_rows.size());
+
+    if (row >= m_rows.size()) {
+        return;
+    }
+    int column = 0;
+    while (column < m_rows[row].size() && !m_rows[row][column].widget->isEmpty()) {
+        column++;
+    }
+
+    if (column >= m_rows[row].size()) {
+        addBlankElement(row, column);
+    }
+    m_rows[row][column].widget->setKey(ui->spinBox_key->value());
+    m_rows[row][column].widget->setValue(ui->lineEdit_value->text());
+    m_rows[row][column].widget->itemEditable();
+    hashTable.insert(ui->spinBox_key->value(), ui->lineEdit_value->text());
+}
+
+void SceneHashTableWidget::deleteByKey()
+{
+    int key = ui->spinBox_key->value();
+    if (!hashTable.contains(key)) {
         return;
     }
 
-    size_t row = hashTable->currentFunction->hashFunction(ui->spinBox_key->value(), m_rows.size());
-
-    int column = 0;
-    if (!m_rows[row][column].widget->isEmpty())
-    {
-        column = m_rows[row].size();
-        addBlankElement(row, column);
-    }
-
-    m_rows[row][column].widget->setKey(ui->spinBox_key->value());
-    m_rows[row][column].widget->setValue(ui->lineEdit_value->text());
-
-
-    hashTable->insert(ui->spinBox_key->value(), ui->lineEdit_value->text());
-    //item->setFlags(item->flags() | Qt::ItemIsEditable);
+    hashTable.removeByKey(key);
+    SceneHashTableWidget::resizeTable();
 }
 
-void SceneHashTableWidget::resizeTable()
+void SceneHashTableWidget::find()
 {
-    // TODO: resize хеш-таблицы
-    int oldSize = m_rows.size();
-    int newSize = ui->spinBox_size->value();
+    int key = ui->spinBox_key->value();
+    if (!hashTable.contains(key)) {
+        return;
+    }
 
-    hashTable->setTableSize(newSize);
+    size_t row = hashTable.getCurrentFunction()->hashFunction(key, m_rows.size());
+    auto list = hashTable.getHashTable()[row];
 
-    for (int i = newSize; i < oldSize; ++i)
-    {
-        for (ElementData& data : m_rows[i])
-        {
-            m_scene->removeItem(data.proxy);
-            data.widget->deleteLater();
+    for (int i = 0; i < m_rows[row].size(); i++) {
+        if (!m_rows[row][i].widget->isEmpty() && m_rows[row][i].widget->key() == key) {
+            m_rows[row][i].widget->setColor(Qt::red);
+            break;
         }
     }
+}
+void SceneHashTableWidget::resizeTable()
+{
+    int newSize = ui->spinBox_size->value();
+    hashTable.setTableSize(newSize);
+
+
+    m_scene->clear();
+    m_rows.clear();
     m_rows.resize(newSize);
 
-    for (int i = oldSize; i < newSize; ++i)
-    {
-        addBlankElement(i, 0);
+    for (int row = 0; row < newSize; ++row) {
+
+        addBlankElement(row, 0);
+
+        auto list = hashTable.getHashTable()[row];
+        for (size_t col = 1; col < list.size(); ++col) {
+            addBlankElement(row, col);
+        }
     }
-    for (int i = 0; i < newSize; ++i)
-    {
-        // TODO: заполнить новыми значениями из хеш-таблицы
-        // (добавить/удалить элементы коллизий при необходимости)
-        auto& list = hashTable->getHashTable()[i];
-        int column = 0;
+
+
+    for (int row = 0; row < newSize; row++) {
+        auto list = hashTable.getHashTable()[row];
+        int col = 0;
         for (auto it = list.begin(); it != list.end(); it++) {
-            if (column >= m_rows[i].size()) {
-                addBlankElement(i, column);
+            if (col >= m_rows[row].size()) {
+                addBlankElement(row, col);
             }
-            m_rows[i][column].widget->setKey(it->first);
-            m_rows[i][column].widget->setValue(it->second);
-            column++;
+            m_rows[row][col].widget->setKey(it->first);
+            m_rows[row][col].widget->setValue(it->second);
+            m_rows[row][col].widget->itemEditable();
+            col++;
         }
     }
 }
@@ -84,6 +125,7 @@ void SceneHashTableWidget::addBlankElement(int row, int column)
 {
     //m_tableWidget->setVerticalHeaderItem(i, new QTableWidgetItem(QString::number(i)));
     TableElementWidget *item = new TableElementWidget();
+    item->itemNotEditable();
     //item->setTextAlignment(Qt::AlignCenter);
     //item->setFlags(item->flags() & ~Qt::ItemIsEditable);
 
